@@ -1,28 +1,6 @@
-import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from main import app  # Importa tu aplicación principal desde el archivo adecuado
-from common.database.database import Base, get_db
-from common.schemas.usuario import UsuarioCreate
-
-# Configuración de base de datos de prueba en memoria
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"  # Usa SQLite en memoria para pruebas rápidas
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Crear las tablas en la base de datos de prueba
-Base.metadata.create_all(bind=engine)
-
-# Dependencia de base de datos para las pruebas
-def override_get_db():
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
-
-app.dependency_overrides[get_db] = override_get_db
+from backend.main import app
+import pytest
 
 # Crear cliente de prueba
 client = TestClient(app)
