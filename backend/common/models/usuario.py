@@ -19,7 +19,7 @@ class Usuario(Base):
     fecha_actualizacion_perfil = Column(DateTime, default=datetime.now(timezone.utc), nullable=False, onupdate=datetime.now(timezone.utc))
 
     # Relación Uno a Uno con Cuenta
-    cuenta = relationship("Cuenta", uselist=False, back_populates="usuario")
+    cuenta = relationship("common.models.usuario.Cuenta", uselist=False, back_populates="usuario")
 
     # Relación Uno a Muchos con Documento
     documentos = relationship("Documento", back_populates="usuario", cascade="all, delete-orphan")
@@ -44,4 +44,4 @@ class Cuenta(Base):
     )
 
     # Relación de vuelta con Usuario
-    usuario = relationship("Usuario", back_populates="cuenta")
+    usuario = relationship("common.models.usuario.Usuario", back_populates="cuenta")
