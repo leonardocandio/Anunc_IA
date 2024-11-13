@@ -1,10 +1,9 @@
-import asyncio
 import redis.asyncio as redis
 import os
 
 class SessionManager:
     def __init__(self):
-        self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+        self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")  # Especificar base de datos 0
         self.redis = None
 
     async def connect(self):

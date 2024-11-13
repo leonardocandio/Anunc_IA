@@ -12,6 +12,8 @@ from common.utils.session_manager import SessionManager  # Importar SessionManag
 router = APIRouter()
 session_manager = SessionManager()  # Inicializar el gestor de sesiones
 
+import traceback
+
 @router.post("/register", response_model=UsuarioResponse, status_code=status.HTTP_201_CREATED, summary="Registrar un nuevo usuario")
 async def register_usuario(usuario: UsuarioCreate, response: Response, db: Session = Depends(get_db)):
     db_usuario = db.query(Usuario).filter(Usuario.email == usuario.email).first()
@@ -58,7 +60,7 @@ async def register_usuario(usuario: UsuarioCreate, response: Response, db: Sessi
         response.set_cookie(
             key="session_id",
             value=session_id,
-            httponly=False,
+            httponly=True,  # Mejorar la seguridad
             samesite="Lax",
             secure=False  # Cambiar a True en producción con HTTPS
         )
@@ -67,7 +69,8 @@ async def register_usuario(usuario: UsuarioCreate, response: Response, db: Sessi
         return nuevo_usuario
     except Exception as e:
         db.rollback()
-        print(f"Error en register_usuario: {e}")  # Imprimir el error
+        print(f"Error en register_usuario: {e}")
+        traceback.print_exc()  # Imprime el traceback completo
         raise HTTPException(status_code=500, detail="Error al registrar el usuario.")
 
 @router.post("/login", summary="Iniciar sesión de un usuario")

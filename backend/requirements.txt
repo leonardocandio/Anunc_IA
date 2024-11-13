@@ -5,7 +5,7 @@ alembic==1.13.3
 annotated-types==0.7.0
 anyio==4.6.2.post1
 attrs==24.2.0
-bcrypt==4.2.0
+bcrypt>=4.2.0
 certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
@@ -37,7 +37,7 @@ mdurl==0.1.2
 multidict==6.1.0
 openai==1.51.2
 orjson==3.10.10
-passlib==1.7.4
+passlib>=1.7.4
 propcache==0.2.0
 psycopg2-binary==2.9.6
 pyasn1==0.6.1

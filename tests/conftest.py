@@ -4,14 +4,16 @@ from sqlalchemy.orm import sessionmaker
 from common.database.database import Base, get_db
 from fastapi.testclient import TestClient
 from main import app
+import os
 
 # Usar la misma DATABASE_URL que en producción
-DATABASE_URL = "sqlite:///./test_db.sqlite"  # Asegúrate de que esto coincida con DATABASE_URL en deploy.yml
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test_db.sqlite")  # Asegúrate de que esto coincida con DATABASE_URL en deploy.yml
 
 # Crear el engine y la sesión de prueba
+connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}
+    connect_args=connect_args
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -29,9 +31,13 @@ def db():
     transaction = connection.begin()
     session = TestingSessionLocal(bind=connection)
     yield session
-    session.close()
-    transaction.rollback()
-    connection.close()
+    try:
+        transaction.rollback()
+    except Exception as e:
+        print(f"Error al hacer rollback de la transacción: {e}")
+    finally:
+        session.close()
+        connection.close()
 
 @pytest.fixture(scope="function")
 def client(db):

@@ -38,6 +38,21 @@ jobs:
         pip install -r backend/requirements.txt
         pip install httpx
 
+    # Instalar Redis CLI
+    - name: Install Redis CLI
+      run: sudo apt-get install -y redis-tools
+
+    # Verificar que Redis está corriendo
+    - name: Verify Redis is running
+      run: |
+        redis-cli -h redis -p 6379 ping
+
+    # Verificar versiones de passlib y bcrypt
+    - name: Verify installed package versions
+      run: |
+        pip show passlib
+        pip show bcrypt
+
     # Aplica las migraciones de Alembic antes de las pruebas
     - name: Apply Alembic migrations for tests
       working-directory: ./backend
@@ -48,7 +63,7 @@ jobs:
 
     - name: Run tests with coverage
       env:
-        REDIS_URL: redis:6379
+        REDIS_URL: redis://redis:6379/0
         DATABASE_URL: ${{ secrets.DATABASE_URL }}  # Usa la misma base de datos
       run: |
         coverage run --rcfile=.coveragerc -m pytest tests
