@@ -1,11 +1,14 @@
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import sessionmaker
+import os
 
-# Cargar las variables de entorno desde .env si existe
+
+# Intentar cargar las variables de entorno desde .env solo si existe
 dotenv_path = os.path.join(os.path.dirname(__file__), '../../.env')
 if os.path.exists(dotenv_path):
+    from dotenv import load_dotenv
     load_dotenv(dotenv_path=dotenv_path)
 
 # Obtener la URL de la base de datos
@@ -15,31 +18,36 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if DATABASE_URL is None:
     raise ValueError("DATABASE_URL no está definida. Asegúrate de tener un archivo .env correctamente configurado.")
 
-# Crear el motor asincrónico para bases de datos
+
+# Verificar si estamos usando SQLite
 if 'sqlite' in DATABASE_URL:
-    # Configuración asincrónica para SQLite
-    engine = create_async_engine(
+    # Configuración para SQLite
+    engine = create_engine(
         DATABASE_URL,
         connect_args={"check_same_thread": False}
     )
 else:
-    # Configuración asincrónica para otros motores de base de datos
-    engine = create_async_engine(
+    # Configuración para otros motores de base de datos (por ejemplo, PostgreSQL)
+    engine = create_engine(
         DATABASE_URL,
-        pool_size=20,
-        max_overflow=10,
-        pool_timeout=30,
-        pool_recycle=1800,
-        pool_pre_ping=True
+        pool_size=20,              # Tamaño del pool de conexiones
+        max_overflow=10,           # Conexiones adicionales que se pueden abrir si el pool está lleno
+        pool_timeout=30,           # Tiempo de espera máximo para obtener una conexión
+        pool_recycle=1800,         # Tiempo de reciclaje de conexiones (en segundos)
+        pool_pre_ping=True         # Verifica la conexión antes de usarla
     )
 
-# Crear la sesión asincrónica de SQLAlchemy
-SessionLocal = sessionmaker(
-    autocommit=False, autoflush=False, bind=engine, class_=AsyncSession
-)
+
+# Crear la sesión de SQLAlchemy
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# Dependencia para obtener la sesión asincrónica de la base de datos
-async def get_db():
-    async with SessionLocal() as session:
-        yield session
+# Dependencia para obtener la sesión de la base de datos
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
