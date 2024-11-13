@@ -1,11 +1,10 @@
 import pytest
 from httpx import AsyncClient
-from sqlalchemy.orm import Session
 from backend.main import app
 from backend.common.database.database import get_db
 from backend.common.models.usuario import Usuario
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 async def async_client():
     async with AsyncClient(app=app, base_url="http://testserver") as client:
         yield client
