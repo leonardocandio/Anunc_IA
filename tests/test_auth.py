@@ -16,12 +16,16 @@ def test_db_session():
     yield db
     db.rollback()
 
-async def test_register_user(async_client):
-    response = await async_client.post("/auth/register", json={
+@pytest.mark.asyncio
+async def test_register_user(client):
+    response = client.post("/auth/register", json={
         "nombre": "Test User",
         "email": "test.user@example.com",
         "password": "securepassword"
     })
+    assert response.status_code == 201
+    data = response.json()
+    assert data["email"] == "test.user@example.com"
     assert response.status_code == 201
     data = response.json()
     assert data["email"] == "test.user@example.com"

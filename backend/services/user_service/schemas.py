@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 
-class CuentaResponse(BaseModel):
+class CuentaModel(BaseModel):
     id_cuenta: int
     tipo_cuenta: str
     saldo: float
