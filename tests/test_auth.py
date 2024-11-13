@@ -4,7 +4,7 @@ from backend.main import app
 from backend.common.database.database import engine, get_db, Base  # Asegúrate de importar `Base`
 from backend.common.models.usuario import Usuario  # importa cualquier modelo necesario
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="function", autouse=True)
 async def setup_database():
     # Crea las tablas en la base de datos antes de las pruebas
     async with engine.begin() as conn:
