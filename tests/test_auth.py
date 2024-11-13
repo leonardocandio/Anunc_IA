@@ -5,7 +5,7 @@ import pytest
 # Crear cliente de prueba
 client = TestClient(app)
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def test_user():
     # Datos de prueba para el usuario
     return {
