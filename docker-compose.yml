@@ -15,7 +15,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   redis:
     image: redis:6-alpine
     ports:
@@ -27,7 +26,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
   backend:
     build:
       context: ./backend
@@ -42,6 +40,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    environment:
+      - DD_AGENT_HOST=datadog-agent
+      - DD_ENV=development
+      - DD_SERVICE=backend
+      - DD_VERSION=1.0.0
+      - DD_TRACE_ENABLED=true  # Habilitar trazas
     command: /bin/sh -c "echo 'Ejecutando migraciones...' && alembic upgrade head && echo 'Migraciones completadas' && uvicorn main:app --host 0.0.0.0 --port 8000"
 
   frontend:
@@ -50,6 +54,17 @@ services:
     ports:
       - "8080:8080"
     command: npm run dev
+
+  datadog-agent:
+    image: "datadog/agent:latest"
+    environment:
+      - DD_API_KEY=7d5df6c7f55e85b29ddcd2edef0e5049
+      - DD_SITE=datadoghq.com  # Cambia esto si usas un sitio diferente de Datadog.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Para que el agente pueda acceder a la información de los contenedores
+    ports:
+      - "8126:8126"  # Puerto para trazas (APM)
+      - "8125:8125/udp"  # Puerto para métricas
 
 volumes:
   db_data:
