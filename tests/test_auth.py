@@ -1,7 +1,18 @@
 import pytest
 from httpx import AsyncClient
 from backend.main import app
-from backend.common.database.database import get_db
+from backend.common.database.database import engine, get_db, Base  # Asegúrate de importar `Base`
+from backend.common.models.usuario import Usuario  # importa cualquier modelo necesario
+
+@pytest.fixture(scope="session", autouse=True)
+async def setup_database():
+    # Crea las tablas en la base de datos antes de las pruebas
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    # Elimina las tablas al finalizar las pruebas (opcional)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
 
 @pytest.fixture(scope="function")
 async def client():
@@ -10,7 +21,6 @@ async def client():
 
 @pytest.fixture
 def test_db_session():
-    # Configura aquí una sesión de prueba para la base de datos si necesitas aislar datos de prueba
     db = next(get_db())
     yield db
     db.rollback()
