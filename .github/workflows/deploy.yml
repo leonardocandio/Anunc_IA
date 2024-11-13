@@ -48,7 +48,7 @@ jobs:
 
     - name: Run tests with coverage
       env:
-        REDIS_URL: redis://localhost:6379
+        REDIS_URL: redis:6379
         DATABASE_URL: ${{ secrets.DATABASE_URL }}  # Usa la misma base de datos
       run: |
         coverage run --rcfile=.coveragerc -m pytest tests
