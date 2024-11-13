@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime
-from common.schemas.cuenta import CuentaResponse  # Importa desde el archivo común
+from common.schemas.cuenta import CuentaResponse  # Asegúrate de tener este esquema definido
 
 class UsuarioCreate(BaseModel):
     nombre: str = Field(..., example="Juan Pérez")

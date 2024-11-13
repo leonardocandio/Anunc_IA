@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from common.database.database import get_db
 from common.models.usuario import Usuario
 from passlib.context import CryptContext
-from common.utils.session_manager import SessionManager  # Importar SessionManager
+from common.utils.session_manager import SessionManager  # Asegúrate de tener este módulo
 import os
 from datetime import datetime, timedelta, timezone
 

@@ -1,3 +1,5 @@
+# backend/main.py
+
 from ddtrace import patch_all, tracer
 patch_all() 
 from fastapi import FastAPI
@@ -36,20 +38,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-# Incluir el router del servicio de autenticación
+# Incluir los routers de los servicios
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
-
-# Incluir el router del servicio de contenido
 app.include_router(ai_content_router, prefix="/content", tags=["ai_content"])
-
-# Incluir el router del servicio de cuentas
 app.include_router(user_router, prefix="/users", tags=["users"])
-
-# Incluir el router del servicio de documentos
 app.include_router(document_router, prefix="/documents", tags=["documents"])
-
-# Incluir el router del servicio de documentos
 app.include_router(product_router, prefix="/productos", tags=["productos"])
 
 # Punto de entrada básico para verificar si la API está funcionando
