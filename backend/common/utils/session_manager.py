@@ -1,4 +1,4 @@
-import aioredis
+from redis.asyncio import Redis
 import os
 
 class SessionManager:
