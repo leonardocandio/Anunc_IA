@@ -36,7 +36,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r backend/requirements.txt
-        pip install pytest coverage pytest-asyncio anyio httpx alembic
+        pip install pytest coverage pytest-asyncio anyio httpx alembic ddtrace
 
     # Aplica las migraciones sin `cd backend` para evitar duplicar la ruta
     - name: Apply Alembic migrations
