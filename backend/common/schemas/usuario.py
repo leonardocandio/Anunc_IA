@@ -15,7 +15,10 @@ class UsuarioResponse(BaseModel):
     avatar_url: Optional[str]
     fecha_registro: datetime
     fecha_actualizacion_perfil: datetime
-    cuenta: "CuentaResponse"  # Usa una cadena para referencia tardía
+    @property
+    def cuenta(self):
+        from services.user_service.schemas import CuentaModel  # Importación dinámica
+        return CuentaResponse
 
     class Config:
         from_attributes = True
