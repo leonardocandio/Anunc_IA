@@ -1,0 +1,34 @@
+name: Test Redis Connection
+
+on: [push]
+
+jobs:
+  test_redis:
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:6.2
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Install Redis CLI
+        run: sudo apt-get update && sudo apt-get install -y redis-tools
+
+      - name: Wait for Redis to be ready
+        run: |
+          echo "Esperando a que Redis esté listo..."
+          for i in {1..10}; do
+            redis-cli -h redis -p 6379 ping && break
+            echo "Redis no está listo, esperando..."
+            sleep 3
+          done
+          redis-cli -h redis -p 6379 ping
+
+      - name: Success
+        run: echo "Redis está funcionando correctamente."
